@@ -188,6 +188,11 @@ $totalAdmins=$pdo->query("SELECT COUNT(*) FROM admin")->fetchColumn();
     
     <header class="flex justify-between items-center mb-6">
         <h1 class="text-3xl font-extrabold text-indigo-700">Gallaxy paint </h1>
+        <a href="adminCommande.php"
+   class="bg-gray-800 text-white px-4 py-2 rounded hover:bg-gray-700">
+   📦 Gérer les commandes
+</a>
+
         <a href="logout.php" class="py-2 px-4 bg-red-600 text-white font-semibold rounded-lg shadow-md hover:bg-red-700 transition duration-300 ease-in-out transform hover:scale-105">
             Déconnexion
         </a>
