@@ -73,3 +73,87 @@ CREATE TABLE paiement (
 );
 
 
+---TRIGGERR POUR LE PROJET 
+DELIMITER $$
+
+CREATE TRIGGER trg_calcul_montant_commande
+AFTER INSERT ON commande_details
+FOR EACH ROW
+BEGIN
+    UPDATE commande
+    SET montant_total = (
+        SELECT SUM(quantite * prix_unitaire)
+        FROM commande_details
+        WHERE id_commande = NEW.id_commande
+    )
+    WHERE id_commande = NEW.id_commande;
+END$$
+
+DELIMITER ;
+
+
+DELIMITER $$
+
+CREATE TRIGGER trg_update_montant_commande
+AFTER UPDATE ON commande_details
+FOR EACH ROW
+BEGIN
+    UPDATE commande
+    SET montant_total = (
+        SELECT SUM(quantite * prix_unitaire)
+        FROM commande_details
+        WHERE id_commande = NEW.id_commande
+    )
+    WHERE id_commande = NEW.id_commande;
+END$$
+
+DELIMITER ;
+
+
+DELIMITER $$
+
+CREATE TRIGGER trg_delete_montant_commande
+AFTER DELETE ON commande_details
+FOR EACH ROW
+BEGIN
+    UPDATE commande
+    SET montant_total = (
+        SELECT IFNULL(SUM(quantite * prix_unitaire), 0)
+        FROM commande_details
+        WHERE id_commande = OLD.id_commande
+    )
+    WHERE id_commande = OLD.id_commande;
+END$$
+
+DELIMITER ;
+
+
+DELIMITER $$
+
+CREATE TRIGGER trg_create_paiement
+AFTER INSERT ON commande
+FOR EACH ROW
+BEGIN
+    INSERT INTO paiement (id_commande, montant, statut)
+    VALUES (NEW.id_commande, NEW.montant_total, 'Non payé');
+END$$
+
+DELIMITER ;
+
+
+
+DELIMITER $$
+
+CREATE TRIGGER trg_check_montant_paiement
+BEFORE INSERT ON paiement
+FOR EACH ROW
+BEGIN
+    IF NEW.montant <= 0 THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Montant de paiement invalide';
+    END IF;
+END$$
+
+DELIMITER ;
+
+
