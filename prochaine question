@@ -1,0 +1,60 @@
+<?php
+session_start();
+include "connexion.php";
+
+if (isset($_POST['login'])) {
+    $email = strtolower(trim($_POST['email']));
+    $password = $_POST['password'];
+
+    try {
+        /** 1️⃣ Vérifier ADMIN */
+        $reqAdmin = $pdo->prepare("SELECT * FROM admin WHERE email = ? LIMIT 1");
+        $reqAdmin->execute([$email]);
+        $admin = $reqAdmin->fetch();
+
+        if ($admin && password_verify($password, $admin['password'])) {
+            $_SESSION['role'] = 'admin';
+            $_SESSION['admin_id'] = $admin['id_admin'];
+            $_SESSION['admin_email'] = $admin['email'];
+            $_SESSION['admin_username'] = $admin['username'];
+
+            header("Location: dashbord.php");
+            exit;
+        }
+
+        /** 2️⃣ Vérifier CLIENT */
+        $reqClient = $pdo->prepare("SELECT * FROM client WHERE email = ? LIMIT 1");
+        $reqClient->execute([$email]);
+        $client = $reqClient->fetch();
+
+        if ($client && password_verify($password, $client['password'])) {
+            $_SESSION['role'] = 'client';
+            $_SESSION['client_id'] = $client['id_client'];
+            $_SESSION['client_email'] = $client['email'];
+            $_SESSION['client_nom'] = $client['nom'];
+
+            header("Location: client_dashboard.php");
+            exit;
+        }
+
+        /** ❌ Aucun trouvé */
+        $error = "Adresse email ou mot de passe incorrect";
+
+    } catch (PDOException $e) {
+        $error = "Erreur serveur : " . $e->getMessage();
+    }
+}
+?> Voici mon code qui ne redirige pas chez l'admin, et maintenant je veux que le redirectionnement se fait automatiquement et voici mes deux tables elles utilisent tous le hachage: -- Table des administrateurs
+CREATE TABLE admin (
+    id_admin INT AUTO_INCREMENT PRIMARY KEY,
+    username VARCHAR(50) NOT NULL UNIQUE,
+    password VARCHAR(255) NOT NULL,
+    email VARCHAR(100)
+); , --Tales client
+CREATE TABLE client (
+    id_client INT AUTO_INCREMENT PRIMARY KEY,
+    nom VARCHAR(100),
+    telephone VARCHAR(20) NOT NULL,
+    adresse TEXT,
+    email VARCHAR(100)
+);

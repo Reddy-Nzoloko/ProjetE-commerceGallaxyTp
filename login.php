@@ -1,32 +1,52 @@
 <?php
 session_start();
-include "connexion.php"; // Assurez-vous que ce fichier inclus fonctionne
+include "connexion.php";
 
-// Connexion admin
 if (isset($_POST['login'])) {
-    $email = $_POST['email'];
+    $email = strtolower(trim($_POST['email']));
     $password = $_POST['password'];
 
-    // NOTE: Il est crucial d'avoir une connexion à la base de données sécurisée ($pdo)
-    // et de gérer les erreurs de connexion.
     try {
-        $req = $pdo->prepare("SELECT * FROM admin WHERE email=? LIMIT 1");
-        $req->execute([$email]);
-        $admin = $req->fetch();
+        /** 1️⃣ Vérifier ADMIN */
+        $reqAdmin = $pdo->prepare("SELECT * FROM admin WHERE email = ? LIMIT 1");
+        $reqAdmin->execute([$email]);
+        $admin = $reqAdmin->fetch();
 
         if ($admin && password_verify($password, $admin['password'])) {
-            $_SESSION['admin'] = $admin['username']; 
-            $_SESSION['admin_email'] = $admin['email']; 
+            $_SESSION['role'] = 'admin';
+            $_SESSION['admin_id'] = $admin['id_admin'];
+            $_SESSION['admin_email'] = $admin['email'];
+            $_SESSION['admin_username'] = $admin['username'];
+
             header("Location: dashbord.php");
             exit;
-        } else {
-            $error = "Adresse email ou mot de passe incorrect";
         }
+
+        /** 2️⃣ Vérifier CLIENT */
+        $reqClient = $pdo->prepare("SELECT * FROM client WHERE email = ? LIMIT 1");
+        $reqClient->execute([$email]);
+        $client = $reqClient->fetch();
+
+        if ($client && password_verify($password, $client['password'])) {
+            $_SESSION['role'] = 'client';
+            $_SESSION['client_id'] = $client['id_client'];
+            $_SESSION['client_email'] = $client['email'];
+            $_SESSION['client_nom'] = $client['nom'];
+
+            header("Location: client_dashboard.php");
+            exit;
+        }
+
+        /** ❌ Aucun trouvé */
+        $error = "Adresse email ou mot de passe incorrect";
+
     } catch (PDOException $e) {
-        $error = "Erreur de base de données : " . $e->getMessage();
+        $error = "Erreur serveur : " . $e->getMessage();
     }
 }
 ?>
+
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -119,6 +139,7 @@ if (isset($_POST['login'])) {
                 </svg>
                 Se connecter
             </button>
+            <a href="inscription.php">Ajout Client</a>
         </form>
     </div>
 </body>
