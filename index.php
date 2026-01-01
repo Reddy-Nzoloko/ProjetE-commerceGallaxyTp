@@ -42,7 +42,7 @@ $categories = $pdo->query("SELECT * FROM categorie")->fetchAll(PDO::FETCH_ASSOC)
       <li><a href="index.php" class="hover:text-orange-400 transition">Accueil</a></li>
       <li><a href="produit.php" class="hover:text-orange-400 transition">Produits</a></li>
       <li><a href="login.php" class="hover:text-orange-400 transition">Connexion</a></li>
-      <li><a href="historique.php" class="hover:text-orange-400 transition">Historique d'achats</a></li>
+      <li><a href="connexionClient.php" class="hover:text-orange-400 transition">Client</a></li>
       <!-- <li><a href="AjoutAdmin.php" class="hover:text-orange-400 transition">Ajout admin</a></li> -->
 
       <!-- <li><a href="AjoutAdmin.php">Ajout Admin</a></li> -->

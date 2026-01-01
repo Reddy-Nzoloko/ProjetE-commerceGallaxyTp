@@ -1,9 +1,15 @@
 <?php
+// session_start();
+// if(!isset($_SESSION['admin'])){
+//     header("Location: login.php");
+//     exit;
+// }
 session_start();
-if(!isset($_SESSION['admin'])){
+if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
     header("Location: login.php");
     exit;
 }
+
 include 'connexion.php'; // Assurez-vous que ce fichier est correctement inclus.
 
 /* -------------------------------

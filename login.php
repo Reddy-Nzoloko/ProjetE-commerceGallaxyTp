@@ -3,49 +3,65 @@ session_start();
 include "connexion.php";
 
 if (isset($_POST['login'])) {
-    $email = strtolower(trim($_POST['email']));
+
+    $email = trim($_POST['email']);
     $password = $_POST['password'];
 
     try {
-        /** 1️⃣ Vérifier ADMIN */
-        $reqAdmin = $pdo->prepare("SELECT * FROM admin WHERE email = ? LIMIT 1");
-        $reqAdmin->execute([$email]);
-        $admin = $reqAdmin->fetch();
 
-        if ($admin && password_verify($password, $admin['password'])) {
-            $_SESSION['role'] = 'admin';
-            $_SESSION['admin_id'] = $admin['id_admin'];
-            $_SESSION['admin_email'] = $admin['email'];
-            $_SESSION['admin_username'] = $admin['username'];
+        /* ======================
+           🔐 ADMIN D'ABORD
+        ======================= */
+        $stmt = $pdo->prepare("SELECT * FROM admin WHERE email = ? LIMIT 1");
+        $stmt->execute([$email]);
+        $admin = $stmt->fetch(PDO::FETCH_ASSOC);
 
-            header("Location: dashbord.php");
-            exit;
+        if ($admin) {
+            if (password_verify($password, $admin['password'])) {
+
+                $_SESSION['role'] = 'admin';
+                $_SESSION['admin_id'] = $admin['id_admin'];
+                $_SESSION['admin_username'] = $admin['username'];
+                $_SESSION['admin_email'] = $admin['email'];
+
+                header("Location: dashbord.php");
+                exit;
+            } else {
+                $error = "Mot de passe incorrect";
+            }
         }
 
-        /** 2️⃣ Vérifier CLIENT */
-        $reqClient = $pdo->prepare("SELECT * FROM client WHERE email = ? LIMIT 1");
-        $reqClient->execute([$email]);
-        $client = $reqClient->fetch();
+        /* ======================
+           👤 CLIENT SI PAS ADMIN
+        ======================= */
+        $stmt = $pdo->prepare("SELECT * FROM client WHERE email = ? LIMIT 1");
+        $stmt->execute([$email]);
+        $client = $stmt->fetch(PDO::FETCH_ASSOC);
 
-        if ($client && password_verify($password, $client['password'])) {
-            $_SESSION['role'] = 'client';
-            $_SESSION['client_id'] = $client['id_client'];
-            $_SESSION['client_email'] = $client['email'];
-            $_SESSION['client_nom'] = $client['nom'];
+        if ($client) {
+            if (password_verify($password, $client['password'])) {
 
-            header("Location: client_dashboard.php");
-            exit;
+                $_SESSION['role'] = 'client';
+                $_SESSION['client_id'] = $client['id_client'];
+                $_SESSION['client_nom'] = $client['nom'];
+                $_SESSION['client_email'] = $client['email'];
+
+                header("Location: client_dashboard.php");
+                exit;
+            } else {
+                $error = "Mot de passe incorrect";
+            }
         }
 
-        /** ❌ Aucun trouvé */
-        $error = "Adresse email ou mot de passe incorrect";
+        if (!isset($error)) {
+            $error = "Aucun compte trouvé avec cet email";
+        }
 
     } catch (PDOException $e) {
         $error = "Erreur serveur : " . $e->getMessage();
     }
 }
 ?>
-
 
 <!DOCTYPE html>
 <html lang="fr">

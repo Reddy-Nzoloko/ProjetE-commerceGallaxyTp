@@ -38,10 +38,9 @@ CREATE TABLE client (
     telephone VARCHAR(20) NOT NULL,
     adresse TEXT,
     email VARCHAR(100)
+    password VARCHAR(255) NOT NULL,
 );
---Ajout du champs mot de pass dans la tables client 
-ALTER TABLE client
-ADD password VARCHAR(255) NOT NULL AFTER email;
+
 
 
 -- table commande 

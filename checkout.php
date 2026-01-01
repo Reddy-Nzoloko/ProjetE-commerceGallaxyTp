@@ -1,87 +1,89 @@
 <?php
-require 'connexion.php';
 session_start();
+require 'connexion.php';
 
-// On suppose que le panier est stocké dans $_SESSION['panier']
-// Structure attendue pour chaque item : ['id_produit'=>int, 'nom'=>string, 'prix'=>float, 'quantite'=>int]
-$panier = $_SESSION['panier'] ?? [];
-
-if(empty($panier)){
-    // Si le panier est vide, on redirige vers index
-    header('Location: index.php');
+// Rediriger vers login si non connecté
+if (!isset($_SESSION['client_id'])) {
+    header("Location: login.php");
     exit;
 }
 
-// Calcul du total
+$panier = $_SESSION['panier'] ?? [];
+if (empty($panier)) {
+    header("Location: panier.php");
+    exit;
+}
+
+// Récupérer les infos du client connecté
+$stmt = $pdo->prepare("SELECT * FROM client WHERE id_client = ?");
+$stmt->execute([$_SESSION['client_id']]);
+$client = $stmt->fetch();
+
 $total = 0;
-foreach($panier as $item){
+foreach($panier as $item) {
     $total += $item['prix'] * $item['quantite'];
 }
 ?>
-
-<!doctype html>
+<!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <link rel="icon" href="telechargement/Caroucelle/icon.ico" type="image/x-icon">
-  <title>GallaxyPaint</title>
-  <script src="https://cdn.tailwindcss.com"></script>
+    <meta charset="UTF-8">
+    <title>Finaliser la commande - Gallaxy</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+      <link rel="icon" href="telechargement/Caroucelle/icon.ico" type="image/x-icon">
+
 </head>
-<body class="bg-gray-100 p-6">
-  <div class="max-w-4xl mx-auto bg-white p-6 rounded-lg shadow">
-    <h1 class="text-2xl font-semibold mb-4">Valider la commande (Paiement à la livraison)</h1>
-
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-      <div>
-        <form action="valider_commande.php" method="post" class="space-y-4">
-          <div>
-            <label class="block text-sm font-medium">Nom</label>
-            <input type="text" name="nom" class="w-full border rounded p-2" required>
-          </div>
-
-          <div>
-            <label class="block text-sm font-medium">Téléphone</label>
-            <input type="tel" name="telephone" class="w-full border rounded p-2" required>
-          </div>
-
-          <div>
-            <label class="block text-sm font-medium">Adresse</label>
-            <textarea name="adresse" class="w-full border rounded p-2" required></textarea>
-          </div>
-
-          <div>
-            <label class="block text-sm font-medium">Email (optionnel)</label>
-            <input type="email" name="email" class="w-full border rounded p-2">
-          </div>
-
-          <input type="hidden" name="montant_total" value="<?=htmlspecialchars($total)?>">
-
-          <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded">Commander maintenant (COD)</button>
-        </form>
-      </div>
-
-      <div>
-        <h2 class="text-lg font-medium mb-2">Récapitulatif du panier</h2>
-        <div class="space-y-3">
-          <?php foreach($panier as $p): ?>
-            <div class="flex justify-between items-center border-b py-2">
-              <div>
-                <div class="font-semibold"><?=htmlspecialchars($p['nom'])?></div>
-                <div class="text-sm text-gray-600">Qté: <?=intval($p['quantite'])?></div>
-              </div>
-              <div class="font-medium"><?=number_format($p['prix'] * $p['quantite'],2)?> $</div>
+<body class="bg-gray-900 text-gray-100 p-6">
+    <div class="max-w-5xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-8">
+        
+        <!-- Infos Client -->
+        <div class="lg:col-span-2 bg-gray-800 p-8 rounded-2xl shadow-xl">
+            <h1 class="text-3xl font-bold mb-6 text-blue-400">Confirmation de livraison</h1>
+            <div class="space-y-4 mb-8">
+                <p><span class="text-gray-400">Destinataire:</span> <br><strong class="text-xl"><?= htmlspecialchars($client['nom']) ?></strong></p>
+                <p><span class="text-gray-400">Téléphone:</span> <br><strong><?= htmlspecialchars($client['telephone']) ?></strong></p>
+                <p><span class="text-gray-400">Adresse de livraison:</span> <br><strong><?= nl2br(htmlspecialchars($client['adresse'])) ?></strong></p>
             </div>
-          <?php endforeach; ?>
 
-          <div class="flex justify-between font-bold text-lg pt-2">
-            <div>Total</div>
-            <div><?=number_format($total,2)?> $</div>
-          </div>
+            <form action="valider_commande.php" method="POST">
+                <input type="hidden" name="id_client" value="<?= $client['id_client'] ?>">
+                <input type="hidden" name="montant_total" value="<?= $total ?>">
+                
+                <h3 class="text-lg font-semibold mb-3">Mode de paiement</h3>
+                <div class="p-4 bg-gray-700 rounded-lg mb-6 border border-blue-500">
+                    <label class="flex items-center space-x-3 cursor-pointer">
+                        <input type="radio" name="mode_paiement" value="Paiement à la livraison" checked class="form-radio h-5 w-5 text-blue-500">
+                        <span>Paiement à la livraison (Cash on Delivery)</span>
+                    </label>
+                </div>
+
+                <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-xl shadow-lg transition transform hover:scale-[1.02]">
+                    Confirmer et Commander (<?= number_format($total, 2) ?> $)
+                </button>
+            </form>
         </div>
-      </div>
-    </div>
 
-  </div>
+        <!-- Résumé Panier -->
+        <div class="bg-gray-800 p-6 rounded-2xl shadow-xl h-fit">
+            <h2 class="text-xl font-bold mb-4 border-b border-gray-700 pb-2">Votre Panier</h2>
+            <div class="space-y-4 max-h-96 overflow-y-auto pr-2">
+                <?php foreach($panier as $id => $p): ?>
+                <div class="flex justify-between items-center bg-gray-700 p-3 rounded-lg">
+                    <div>
+                        <p class="font-medium"><?= htmlspecialchars($p['nom']) ?></p>
+                        <p class="text-sm text-gray-400">Quantité: <?= $p['quantite'] ?></p>
+                    </div>
+                    <p class="font-bold text-blue-400"><?= number_format($p['prix'] * $p['quantite'], 2) ?> $</p>
+                </div>
+                <?php endforeach; ?>
+            </div>
+            <div class="mt-6 pt-4 border-t border-gray-700">
+                <div class="flex justify-between text-xl font-bold">
+                    <span>Total</span>
+                    <span class="text-green-400"><?= number_format($total, 2) ?> $</span>
+                </div>
+            </div>
+        </div>
+    </div>
 </body>
 </html>

@@ -32,6 +32,7 @@ if (isset($_POST['register'])) {
     <meta charset="UTF-8">
     <title>Inscription Client | Gallaxy Paint</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="telechargement/Caroucelle/icon.ico" type="image/x-icon">
     <script src="https://cdn.tailwindcss.com"></script>
 
     <script>

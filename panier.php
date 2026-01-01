@@ -155,7 +155,7 @@ $whatsapp_link = "https://wa.me/243992261070?text=" . urlencode($message);
           <a href="<?= $whatsapp_link ?>" target="_blank" class="bg-green-600 text-white py-2 rounded-lg hover:bg-green-700 text-center transition">
              Commander via WhatsApp
           </a>
-          <a href="checkout.php" class="bg-blue-600 text-white py-2 rounded-lg hover:bg-green-700 text-center transition">Commander maintenant</a>
+          <a href="connexionClient.php" class="bg-blue-600 text-white py-2 rounded-lg hover:bg-green-700 text-center transition">Commander maintenant</a>
         </div>
       </div>
     </div>
