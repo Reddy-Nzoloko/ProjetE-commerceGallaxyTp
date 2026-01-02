@@ -35,46 +35,25 @@ $nb_articles = isset($_SESSION['panier']) ? array_sum(array_column($_SESSION['pa
   <div class="max-w-7xl mx-auto px-4 flex justify-between items-center h-16">
     <a href="index.php" class="text-xl font-bold">Gallaxy Paint</a>
 
-    <div class="hidden md:flex space-x-6">
-      <a href="index.php" class="hover:text-blue-400">Accueil</a>
+    <div class="hidden md:flex space-x-6 text-sm">
+      <a href="index.php" class="hover:text-blue-400 transition">Accueil</a>
       <a href="produit.php" class="text-blue-400 font-semibold">Produits</a>
-      <a href="login.php" class="hover:text-blue-400">Connexion</a>
-      <a href="panier.php" class="relative hover:text-blue-400 flex items-center">
-        <!-- 🛒 Icon -->
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-             stroke-width="2" stroke="currentColor" class="w-5 h-5">
-          <path stroke-linecap="round" stroke-linejoin="round"
-                d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13l-1.3 5.2a1 1 0 001 1.3h12.6M10 21h4"/>
+      <a href="panier.php" class="relative hover:text-blue-400 flex items-center gap-1">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13l-1.3 5.2a1 1 0 001 1.3h12.6M10 21h4"/>
         </svg>
+        Panier
         <?php if ($nb_articles > 0): ?>
-          <span class="absolute -top-2 -right-3 bg-red-600 text-xs text-white px-1.5 py-0.5 rounded-full"><?= $nb_articles ?></span>
+          <span class="bg-blue-600 text-[10px] text-white px-1.5 py-0.5 rounded-full"><?= $nb_articles ?></span>
         <?php endif; ?>
       </a>
     </div>
 
-    <!-- Menu mobile -->
     <button id="menuBtn" class="md:hidden text-white">
-      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none"
-           viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-        <path stroke-linecap="round" stroke-linejoin="round"
-              d="M4 6h16M4 12h16M4 18h16"/>
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/>
       </svg>
     </button>
-  </div>
-
-  <!-- Menu mobile -->
-  <div id="mobileMenu" class="hidden bg-gray-800 px-4 pb-3 space-y-2">
-    <a href="index.php" class="block hover:text-blue-400">Accueil</a>
-    <a href="produit.php" class="block text-blue-400 font-semibold">Produits</a>
-    <a href="login.php" class="block hover:text-blue-400">Connexion</a>
-    <a href="panier.php" class="flex items-center gap-2 hover:text-blue-400">
-      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-           stroke-width="2" stroke="currentColor" class="w-5 h-5">
-        <path stroke-linecap="round" stroke-linejoin="round"
-              d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13l-1.3 5.2a1 1 0 001 1.3h12.6M10 21h4"/>
-      </svg>
-      Panier
-    </a>
   </div>
 </nav>
 
@@ -82,73 +61,64 @@ $nb_articles = isset($_SESSION['panier']) ? array_sum(array_column($_SESSION['pa
 <div class="max-w-7xl mx-auto px-4 py-8 grid grid-cols-1 md:grid-cols-4 gap-6">
 
   <!-- Sidebar catégories -->
-  <aside class="bg-white shadow rounded-lg p-4">
-    <h3 class="text-lg font-bold mb-3 border-b pb-2">Catégories</h3>
-    <ul class="space-y-2">
-      <li>
-        <a href="produit.php"
-           class="block px-3 py-2 rounded-md <?= $id_categorie == 0 ? 'bg-blue-100 text-blue-700 font-semibold' : 'hover:bg-gray-100' ?>">
-          Tous les produits
-        </a>
-      </li>
-      <?php foreach ($categories as $c): ?>
-        <li>
-          <a href="produit.php?categorie=<?= $c['id_categorie'] ?>"
-             class="block px-3 py-2 rounded-md <?= $id_categorie == $c['id_categorie'] ? 'bg-blue-100 text-blue-700 font-semibold' : 'hover:bg-gray-100' ?>">
-            <?= htmlspecialchars($c['nom_categorie']) ?>
-          </a>
-        </li>
-      <?php endforeach; ?>
-    </ul>
+  <aside class="md:col-span-1">
+    <div class="bg-white shadow-sm rounded-2xl p-5 sticky top-24">
+        <h3 class="text-lg font-bold mb-4 text-gray-900">Catégories</h3>
+        <ul class="space-y-1">
+          <li>
+            <a href="produit.php" class="block px-4 py-2.5 rounded-xl transition <?= $id_categorie == 0 ? 'bg-blue-600 text-white shadow-md' : 'hover:bg-gray-50 text-gray-600' ?>">
+              Tous les produits
+            </a>
+          </li>
+          <?php foreach ($categories as $c): ?>
+            <li>
+              <a href="produit.php?categorie=<?= $c['id_categorie'] ?>"
+                 class="block px-4 py-2.5 rounded-xl transition <?= $id_categorie == $c['id_categorie'] ? 'bg-blue-600 text-white shadow-md' : 'hover:bg-gray-50 text-gray-600' ?>">
+                <?= htmlspecialchars($c['nom_categorie']) ?>
+              </a>
+            </li>
+          <?php endforeach; ?>
+        </ul>
+    </div>
   </aside>
 
   <!-- Liste des produits -->
   <main class="md:col-span-3">
-    <h2 class="text-2xl font-bold mb-6 text-center">
-      <?= $id_categorie > 0
-        ? "Produits de la catégorie : " . htmlspecialchars($categories[array_search($id_categorie, array_column($categories, 'id_categorie'))]['nom_categorie'])
-        : "Tous les produits" ?>
-    </h2>
+    <div class="flex items-center justify-between mb-8">
+        <h2 class="text-2xl font-black text-gray-900 uppercase tracking-tight">
+          <?= $id_categorie > 0 ? "Rayon : " . htmlspecialchars($produits[0]['nom_categorie'] ?? 'Catégorie') : "Nos Produits" ?>
+        </h2>
+        <span class="text-sm text-gray-500 font-medium"><?= count($produits) ?> articles disponibles</span>
+    </div>
 
     <?php if (count($produits) > 0): ?>
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        <?php foreach ($produits as $p): 
-          $photo_url = "https://" . $_SERVER['HTTP_HOST'] . dirname($_SERVER['PHP_SELF']) . "/telechargement/" . $p['photo'];
-          $whatsapp_message = "Produit : " . $p['nom_produit'] . 
-                              " | Prix : " . $p['prix'] . "$ | Photo : " . $photo_url;
-          $whatsapp_link = "https://wa.me/243992261070?text=" . urlencode($whatsapp_message);
-        ?>
-          <div class="bg-white shadow-lg rounded-xl overflow-hidden hover:shadow-2xl transition flex flex-col">
-            <img src="telechargement/<?= htmlspecialchars($p['photo']) ?>" class="w-full h-56 object-cover" alt="<?= htmlspecialchars($p['nom_produit']) ?>">
-            <div class="p-4 flex flex-col flex-grow">
-              <h5 class="font-bold text-lg mb-2"><?= htmlspecialchars($p['nom_produit']) ?></h5>
-              <p class="text-gray-600 text-sm mb-1">Code : <?= htmlspecialchars($p['code_produit']) ?></p>
-              <p class="text-gray-600 text-sm mb-2">Couleur : <?= htmlspecialchars($p['couleur']) ?></p>
-              <p class="text-lg font-semibold text-gray-800 mb-3"><?= $p['prix'] ?> $</p>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+        <?php foreach ($produits as $p): ?>
+          <div class="group bg-white rounded-3xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col border border-gray-100">
+            <div class="relative overflow-hidden aspect-square">
+                <img src="telechargement/<?= htmlspecialchars($p['photo']) ?>" class="w-full h-full object-cover transition duration-500 group-hover:scale-110" alt="<?= htmlspecialchars($p['nom_produit']) ?>">
+                <div class="absolute top-4 right-4 bg-white/90 backdrop-blur px-3 py-1 rounded-full text-sm font-bold text-gray-900 shadow-sm">
+                    <?= $p['prix'] ?> $
+                </div>
+            </div>
+            
+            <div class="p-5 flex flex-col flex-grow">
+              <h5 class="font-bold text-gray-900 text-lg mb-1 leading-tight"><?= htmlspecialchars($p['nom_produit']) ?></h5>
+              <div class="flex items-center gap-2 mb-4">
+                  <span class="text-[10px] uppercase tracking-widest font-bold bg-gray-100 text-gray-500 px-2 py-0.5 rounded"><?= htmlspecialchars($p['couleur']) ?></span>
+                  <span class="text-[10px] uppercase tracking-widest font-bold bg-blue-50 text-blue-600 px-2 py-0.5 rounded">REF: <?= htmlspecialchars($p['code_produit']) ?></span>
+              </div>
 
-              <div class="mt-auto flex justify-between">
+              <div class="mt-auto grid grid-cols-2 gap-2">
                 <a href="panier.php?action=add&id=<?= $p['id_produit'] ?>"
-                   class="flex items-center gap-1 bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded-md text-sm transition">
-                  <!-- Icon Panier -->
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none"
-                       viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"
-                       class="w-4 h-4">
-                    <path stroke-linecap="round" stroke-linejoin="round"
-                          d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13l-1.3 5.2a1 1 0 001 1.3h12.6M10 21h4"/>
-                  </svg>
-                  Ajouter
+                   class="flex items-center justify-center gap-2 bg-gray-900 hover:bg-black text-white py-3 rounded-xl text-xs font-bold transition">
+                  Panier
                 </a>
 
-                <a href="<?= $whatsapp_link ?>" target="_blank"
-                   class="flex items-center gap-1 bg-green-600 hover:bg-green-700 text-white px-3 py-1.5 rounded-md text-sm transition">
-                  <!-- Icon WhatsApp -->
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none"
-                       viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"
-                       class="w-4 h-4">
-                    <path stroke-linecap="round" stroke-linejoin="round"
-                          d="M21.75 12A9.75 9.75 0 1112 2.25a9.75 9.75 0 019.75 9.75zM12 17.25h.008v.008H12v-.008zM12 13.5v-4.5"/>
-                  </svg>
-                  Commander
+                <!-- ✅ Modification ici : Envoi vers le script de validation directe -->
+                <a href="valider_whatsapp_direct.php?id=<?= $p['id_produit'] ?>"
+                   class="flex items-center justify-center gap-2 bg-green-500 hover:bg-green-600 text-white py-3 rounded-xl text-xs font-bold transition">
+                  WhatsApp
                 </a>
               </div>
             </div>
@@ -156,17 +126,17 @@ $nb_articles = isset($_SESSION['panier']) ? array_sum(array_column($_SESSION['pa
         <?php endforeach; ?>
       </div>
     <?php else: ?>
-      <p class="text-center text-gray-600">Aucun produit trouvé dans cette catégorie.</p>
+      <div class="bg-white p-20 rounded-3xl text-center shadow-sm">
+          <p class="text-gray-400 font-medium text-lg">Aucun produit dans cette vitrine pour le moment.</p>
+      </div>
     <?php endif; ?>
   </main>
 </div>
 
-<!-- ✅ Footer -->
-<footer class="bg-gray-900 text-white py-6 text-center mt-10">
-  <p>© RedDev 2025 Gallaxy Paint</p>
+<footer class="bg-gray-900 text-white py-12 text-center mt-20 border-t border-white/5">
+  <p class="text-gray-500 text-sm">© 2025 Gallaxy Paint — par RedDev</p>
 </footer>
 
-<!-- ✅ Script burger -->
 <script>
   document.getElementById("menuBtn").addEventListener("click", () => {
     document.getElementById("mobileMenu").classList.toggle("hidden");
