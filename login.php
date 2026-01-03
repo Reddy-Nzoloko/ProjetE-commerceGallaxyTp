@@ -155,7 +155,7 @@ if (isset($_POST['login'])) {
                 </svg>
                 Se connecter
             </button>
-            <a href="inscription.php">Ajout Client</a>
+            <!-- <a href="inscription.php">Ajout Client</a> -->
         </form>
     </div>
 </body>
